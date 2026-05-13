@@ -63,6 +63,54 @@ const STRONG_TERMS = new Set([
   '公正',
 ]);
 
+const CONCEPT_HINTS = [
+  {
+    pattern: /霸凌|欺凌|羞辱|欺负|孤立|网暴|骚扰|伤害|暴力|羞耻/,
+    topics: { harm_protection: 8, justice_trial: 5, dignity_identity: 4, trust_personhood: 3 },
+    terms: ['伤害', '保护', '尊严', '审判', '公正', '信任', '敌人'],
+  },
+  {
+    pattern: /内卷|加班|996|绩效|考核|裁员|失业|工资|劳动|打工|剥削|职场/,
+    topics: { bureaucracy_control: 8, power_responsibility: 6, dignity_identity: 4, harm_protection: 3 },
+    terms: ['责任', '权力', '代价', '流程', '指标', '尊严', '承担'],
+  },
+  {
+    pattern: /pua|操控|洗脑|控制欲|情绪勒索|煤气灯|服从|顺从/,
+    topics: { trust_personhood: 8, freedom_order: 6, silence_relationship: 5, harm_protection: 3 },
+    terms: ['信任', '操纵', '工具', '棋子', '束缚', '自由', '伤害'],
+  },
+  {
+    pattern: /性别|女性|女权|厌女|婚恋|彩礼|家务|生育|恋爱|出轨|分手|亲密关系/,
+    topics: { silence_relationship: 7, trust_personhood: 5, dignity_identity: 5, power_responsibility: 4 },
+    terms: ['信任', '背叛', '关系', '尊严', '责任', '伤害', '等待'],
+  },
+  {
+    pattern: /焦虑|抑郁|压力|崩溃|痛苦|绝望|孤独|自责|创伤/,
+    topics: { harm_protection: 7, silence_relationship: 6, resistance_hope: 4, trust_personhood: 3 },
+    terms: ['痛苦', '恐惧', '希望', '保护', '沉默', '孤独', '勇气'],
+  },
+  {
+    pattern: /形式主义|一刀切|官僚|审批|流程|填表|打卡|指标|汇报|留痕/,
+    topics: { bureaucracy_control: 9, power_responsibility: 5, freedom_order: 4, dignity_identity: 3 },
+    terms: ['流程', '制度', '规定', '责任', '权力', '自由', '约束'],
+  },
+  {
+    pattern: /舆论|造谣|谣言|反转|热搜|小作文|举报|证据|吃瓜|公关/,
+    topics: { memory_truth: 8, justice_trial: 6, trust_personhood: 3, power_responsibility: 3 },
+    terms: ['真相', '记录', '证据', '审判', '公正', '信任', '故事'],
+  },
+  {
+    pattern: /饭圈|粉丝|偶像|塌房|控评|追星|群体|狂热/,
+    topics: { memory_truth: 5, trust_personhood: 5, dignity_identity: 4, justice_trial: 3 },
+    terms: ['故事', '信任', '身份', '审判', '真相', '名字'],
+  },
+  {
+    pattern: /ai|算法|大模型|自动化|机器人|推荐|平台|数据|隐私/,
+    topics: { surveillance_technology: 8, trust_personhood: 5, dignity_identity: 4, power_responsibility: 4 },
+    terms: ['数据', '系统', '终端', '工具', '责任', '信任', '编号'],
+  },
+];
+
 function normalize(text) {
   return String(text || '')
     .toLowerCase()
@@ -71,6 +119,34 @@ function normalize(text) {
     .replace(/[^\p{Script=Han}\p{Letter}\p{Number}]+/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function conceptHints(query) {
+  const normalized = normalize(query).replace(/\s+/g, '');
+  const topics = new Map();
+  const terms = [];
+  for (const hint of CONCEPT_HINTS) {
+    if (!hint.pattern.test(normalized)) continue;
+    for (const [id, score] of Object.entries(hint.topics)) {
+      topics.set(id, (topics.get(id) || 0) + score);
+    }
+    terms.push(...hint.terms);
+  }
+  return { topics, terms };
+}
+
+function bigrams(text) {
+  const compact = normalize(text).replace(/\s+/g, '');
+  const grams = new Set();
+  for (let index = 0; index < compact.length - 1; index += 1) grams.add(compact.slice(index, index + 2));
+  return grams;
+}
+
+function overlapScore(a, b) {
+  if (!a.size || !b.size) return 0;
+  let overlap = 0;
+  for (const item of a) if (b.has(item)) overlap += 1;
+  return overlap / Math.min(a.size, b.size);
 }
 
 function unique(items) {
@@ -96,7 +172,7 @@ function extractTerms(query) {
     .slice(0, 80);
 }
 
-function topicScores(query, terms) {
+function topicScores(query, terms, hints = conceptHints(query)) {
   const normalized = normalize(query).replace(/\s+/g, '');
   const scores = new Map();
   for (const topic of state.topics) {
@@ -110,6 +186,7 @@ function topicScores(query, terms) {
     if (score > 0) scores.set(topic.id, score);
   }
   const add = (id, value) => scores.set(id, (scores.get(id) || 0) + value);
+  for (const [id, score] of hints.topics.entries()) add(id, score);
   if (/手机袋|收缴|上交|不得不|强制/.test(normalized)) {
     add('freedom_order', 7);
     add('trust_personhood', 5);
@@ -124,10 +201,22 @@ function topicScores(query, terms) {
     add('silence_relationship', 8);
     add('trust_personhood', 4);
   }
+  if (scores.size === 0) {
+    const queryGrams = bigrams(query);
+    const fuzzy = state.topics
+      .map((topic) => {
+        const haystack = `${topic.name} ${topic.description} ${topic.queryTerms.join(' ')} ${topic.prompts.join(' ')}`;
+        return [topic.id, overlapScore(queryGrams, bigrams(haystack))];
+      })
+      .filter(([, score]) => score >= 0.08)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+    for (const [id, score] of fuzzy) add(id, Math.max(2, score * 12));
+  }
   return scores;
 }
 
-function expandedTerms(terms, scores) {
+function expandedTerms(terms, scores, hintTerms = []) {
   const selected = [...scores.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
@@ -135,9 +224,29 @@ function expandedTerms(terms, scores) {
     .filter(Boolean);
   const expansion = [];
   for (const topic of selected) expansion.push(...topic.queryTerms.slice(0, 14));
-  return unique([...terms, ...expansion.map((term) => normalize(term).replace(/\s+/g, ''))])
+  return unique([...terms, ...hintTerms, ...expansion.map((term) => normalize(term).replace(/\s+/g, ''))])
     .filter((term) => term.length >= 2)
     .slice(0, 110);
+}
+
+function fallbackScores(query, scores) {
+  if (scores.size > 0) return scores;
+  const queryGrams = bigrams(query);
+  const fuzzy = state.topics
+    .map((topic) => {
+      const haystack = `${topic.name} ${topic.description} ${topic.queryTerms.join(' ')} ${topic.prompts.join(' ')}`;
+      return [topic.id, overlapScore(queryGrams, bigrams(haystack))];
+    })
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  const fallback = new Map();
+  for (const [id, score] of fuzzy) fallback.set(id, Math.max(2, score * 10));
+  if (fallback.size === 0) {
+    fallback.set('trust_personhood', 2.4);
+    fallback.set('memory_truth', 2.2);
+    fallback.set('power_responsibility', 2);
+  }
+  return fallback;
 }
 
 function recordTopicScore(record, scores) {
@@ -256,7 +365,22 @@ function renderResults(results) {
   if (!results.length) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.textContent = '没有找到合适结果。试试把议题拆成几个概念词，例如“权力 责任 规训 自由”。';
+    empty.innerHTML = `
+      <p>没有找到足够直接的结果。可以换成更抽象的概念词，或者关闭“偏精确匹配”。</p>
+      <div class="empty-actions">
+        <button type="button" data-empty-query="权力 责任">权力 责任</button>
+        <button type="button" data-empty-query="自由 束缚">自由 束缚</button>
+        <button type="button" data-empty-query="信任 棋子">信任 棋子</button>
+        <button type="button" data-empty-query="审判 公正">审判 公正</button>
+      </div>
+    `;
+    empty.querySelectorAll('[data-empty-query]').forEach((button) => {
+      button.addEventListener('click', () => {
+        els.query.value = button.dataset.emptyQuery || '';
+        els.exactMode.checked = false;
+        search();
+      });
+    });
     els.results.append(empty);
     return;
   }
@@ -288,6 +412,28 @@ function renderResults(results) {
   }
 }
 
+function addFallbackResults(deduped, seen, records, scores) {
+  const additions = records
+    .map((record) => {
+      const semantic = recordTopicScore(record, scores);
+      if (semantic <= 0 && !record.hot) return null;
+      return {
+        record,
+        score: semantic * 1.7 + Number(record.q || 0.4) * 10 + (record.hot ? 20 : 0),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score || b.record.q - a.record.q);
+
+  for (const item of additions) {
+    const key = `${item.record.t}|${item.record.c}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(item);
+    if (deduped.length >= 24) break;
+  }
+}
+
 async function search() {
   const query = els.query.value.trim();
   if (!query || state.searching) return;
@@ -297,9 +443,10 @@ async function search() {
     await ensureCore();
     if (els.fullMode.checked) await ensureExtra();
     const records = els.fullMode.checked ? [...state.core, ...state.extra] : state.core;
-    const queryTerms = extractTerms(query);
-    const scores = topicScores(query, queryTerms);
-    const expansionTerms = expandedTerms(queryTerms, scores);
+    const hints = conceptHints(query);
+    const queryTerms = unique([...extractTerms(query), ...hints.terms.map((term) => normalize(term).replace(/\s+/g, ''))]);
+    const scores = topicScores(query, queryTerms, hints);
+    const expansionTerms = expandedTerms(queryTerms, scores, hints.terms);
     renderTopics(scores);
 
     const ranked = [];
@@ -327,8 +474,17 @@ async function search() {
       deduped.push(item);
       if (deduped.length >= 80) break;
     }
+    let usedFallback = false;
+    if (!exactMode && deduped.length < 8) {
+      usedFallback = true;
+      const broadScores = fallbackScores(query, scores);
+      renderTopics(broadScores);
+      addFallbackResults(deduped, seen, records, broadScores);
+    }
 
-    els.summary.textContent = `“${query}” 找到 ${deduped.length} 条候选，当前展示前 ${Math.min(24, deduped.length)} 条。`;
+    els.summary.textContent = usedFallback
+      ? `“${query}” 直接命中较少，已启用主题兜底，当前展示 ${Math.min(24, deduped.length)} 条可用引文。`
+      : `“${query}” 找到 ${deduped.length} 条候选，当前展示前 ${Math.min(24, deduped.length)} 条。`;
     els.status.textContent = els.fullMode.checked ? '全量检索完成。' : '核心引文库检索完成。';
     renderResults(deduped);
     const url = new URL(window.location.href);

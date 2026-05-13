@@ -6,10 +6,12 @@
   --ink: #1e2428;
   --muted: #5e686f;
   --line: #d7cec0;
-  --accent: #1f7a74;
-  --accent-dark: #145650;
-  --gold: #b7781b;
-  --rose: #a84655;
+  --accent: #257f9f;
+  --accent-dark: #15526f;
+  --gold: #c48624;
+  --rose: #b14b68;
+  --violet: #7765c8;
+  --mint: #33a67d;
   --shadow: 0 14px 36px rgba(45, 39, 28, 0.12);
 }
 
@@ -19,7 +21,10 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(98, 202, 216, 0.22), transparent 24rem),
+    radial-gradient(circle at 87% 18%, rgba(246, 192, 95, 0.22), transparent 22rem),
+    var(--bg);
   color: var(--ink);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -39,14 +44,37 @@ button {
 
 .hero {
   background:
-    linear-gradient(180deg, rgba(10, 45, 58, 0.66), rgba(10, 45, 58, 0.36)),
-    url("https://uploadstatic.mihoyo.com/contentweb/20200113/2020011311440684463.jpg");
+    linear-gradient(90deg, rgba(13, 31, 46, 0.9), rgba(19, 71, 86, 0.72) 48%, rgba(91, 62, 118, 0.52)),
+    url("./assets/teyvat-search.svg");
   background-position: center;
   background-size: cover;
   color: white;
   min-height: 38vh;
   display: flex;
   align-items: flex-end;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 44%;
+  background: linear-gradient(180deg, transparent, rgba(11, 27, 35, 0.55));
+  pointer-events: none;
+}
+
+.hero__art {
+  position: absolute;
+  right: max(16px, calc((100vw - 1120px) / 2));
+  bottom: 18px;
+  width: min(360px, 34vw);
+  height: auto;
+  border: 1px solid rgba(255, 239, 193, 0.36);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.26);
+  opacity: 0.78;
 }
 
 .hero__inner,
@@ -57,6 +85,8 @@ main {
 
 .hero__inner {
   padding: 64px 0 34px;
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -65,6 +95,7 @@ main {
   font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.28);
 }
 
 h1,
@@ -76,6 +107,7 @@ h2 {
 h1 {
   font-size: clamp(2.5rem, 6vw, 5.5rem);
   line-height: 0.95;
+  text-shadow: 0 4px 22px rgba(0, 0, 0, 0.32);
 }
 
 h2 {
@@ -87,6 +119,7 @@ h2 {
   margin: 18px 0 0;
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.05rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.28);
 }
 
 main {
@@ -108,6 +141,15 @@ main {
   margin-top: -48px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+}
+
+.search-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #70d7ff, #b18cff, #ffcf5e, #ff7b86, #74e08b);
 }
 
 .search-box label {
@@ -155,7 +197,7 @@ textarea:focus {
   padding: 0 16px;
   border-radius: 8px;
   color: white;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--mint));
   font-weight: 650;
 }
 
@@ -198,8 +240,9 @@ textarea:focus {
   border-radius: 999px;
   min-height: 34px;
   padding: 0 12px;
-  background: #ece3d3;
+  background: #efe3d2;
   color: #334047;
+  border: 1px solid rgba(196, 134, 36, 0.22);
 }
 
 .examples button:hover {
@@ -225,7 +268,8 @@ textarea:focus {
   justify-content: space-between;
   gap: 18px;
   align-items: center;
-  background: #f1fbf9;
+  background:
+    linear-gradient(135deg, rgba(241, 251, 249, 0.96), rgba(255, 248, 226, 0.96));
   border-color: #b7dcd6;
   box-shadow: none;
 }
@@ -266,6 +310,16 @@ textarea:focus {
   border-radius: 8px;
   padding: 16px;
   box-shadow: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(37, 127, 159, 0.85), rgba(196, 134, 36, 0.85), rgba(177, 75, 104, 0.85));
 }
 
 .result-card__meta {
@@ -330,9 +384,36 @@ textarea:focus {
   color: var(--muted);
 }
 
+.empty p {
+  margin: 0 0 14px;
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.empty-actions button {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--accent-dark);
+  background: #e9f3ef;
+  border: 1px solid #bfdad0;
+}
+
 @media (max-width: 760px) {
   .hero {
     min-height: 34vh;
+  }
+
+  .hero__art {
+    width: 174px;
+    right: 8px;
+    top: 16px;
+    bottom: auto;
+    opacity: 0.34;
   }
 
   .hero__inner,
