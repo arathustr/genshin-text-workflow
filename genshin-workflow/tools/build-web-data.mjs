@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,6 +9,8 @@ const workspaceRoot = path.resolve(__dirname, '..', '..');
 const workflowRoot = path.resolve(__dirname, '..');
 const dataDir = process.env.GENSHIN_DATA_DIR || path.join(workspaceRoot, 'genshin-game-data');
 const textMapDir = path.join(dataDir, 'TextMap');
+const excelDir = path.join(dataDir, 'ExcelBinOutput');
+const readableDir = path.join(dataDir, 'Readable', 'CHS');
 const indexDir = path.join(workflowRoot, 'index');
 const webRoot = path.join(workspaceRoot, 'web');
 const webDataDir = path.join(webRoot, 'data');
@@ -75,8 +77,8 @@ const TOPICS = [
     id: 'body_desire_origin',
     name: '身体、欲望与血脉',
     description: '身体感受、欲望、亲密、生育、父母、出身、血脉、混血与身份秘密。',
-    queryTerms: ['性爱', '性欲', '情欲', '欲望', '身体', '肉体', '生理', '心理', '亲密', '生育', '繁殖', '交配', '来历', '出身', '出生', '降生', '父母', '父亲', '母亲', '血脉', '混血', '半仙', '仙兽', '麒麟', '甘雨', '角', '害羞', '秘密', '体型'],
-    recordTerms: ['欲望', '身体', '肉体', '生理上', '心理上', '亲密', '生育', '降生', '父母', '父亲', '母亲', '血脉', '混血', '半仙', '仙兽', '麒麟', '甘雨', '麒麟的角', '我的角', '发饰', '害羞', '疏远', '体型', '食欲', '来历', '出身'],
+    queryTerms: ['性爱', '性欲', '性描写', '性暗示', '性关系', '情欲', '欲望', '身体', '肉体', '生理', '心理', '亲密', '亲密描写', '生育', '繁殖', '交配', '来历', '出身', '出生', '降生', '父母', '父亲', '母亲', '血脉', '混血', '半仙', '仙兽', '麒麟', '甘雨', '角', '害羞', '秘密', '体型'],
+    recordTerms: ['欲望', '私欲', '羞耻', '身体', '肉体', '生理上', '心理上', '亲密', '相亲', '结合', '互相结合', '生育', '生儿育女', '降生', '幼儿', '父母', '父亲', '母亲', '血脉', '混血', '半仙', '仙兽', '麒麟', '麒麟的角', '我的角', '沐浴', '衣物', '月光', '露珠', '浅睡', '体型', '食欲', '来历', '出身'],
     prompts: ['用原神文本隐喻身体和欲望', '甘雨的来历与麒麟血脉', '亲密关系、身体边界和身份秘密'],
   },
   {
@@ -145,6 +147,26 @@ async function loadJson(filePath, fallback = null) {
   }
 }
 
+async function readTextIfExists(filePath) {
+  try {
+    const bytes = await readFile(filePath);
+    const utf8 = new TextDecoder('utf-8').decode(bytes);
+    if (!looksMojibake(utf8)) return utf8;
+    return new TextDecoder('gb18030').decode(bytes);
+  } catch {
+    return '';
+  }
+}
+
+function looksMojibake(text) {
+  const sample = text.slice(0, 2000);
+  const replacementCount = sample.match(/\uFFFD/g)?.length || 0;
+  if (replacementCount > 0) return true;
+  const latinNoise = sample.match(/[ÃÂãäåæçèéêìíîïòóôöùúûü]/g)?.length || 0;
+  const hanCount = sample.match(/[\u4e00-\u9fff]/g)?.length || 0;
+  return latinNoise >= 6 && hanCount < latinNoise * 2;
+}
+
 function cleanText(value) {
   if (typeof value !== 'string') return '';
   return value
@@ -160,6 +182,81 @@ function cleanText(value) {
 
 function compactSpaces(value) {
   return cleanText(value).replace(/\s+/g, ' ').trim();
+}
+
+function readableStem(localizationRow) {
+  const candidates = [
+    localizationRow?.LJMEGPECFEN,
+    localizationRow?.DALLNFNILMI,
+    localizationRow?.chsPath,
+    localizationRow?.cnPath,
+  ].filter(Boolean);
+  for (const value of candidates) {
+    const match = String(value).match(/Readable\/CHS\/([^/\\]+)$/i);
+    if (match) return match[1];
+  }
+  return '';
+}
+
+function titleFromReadableText(text, fallback) {
+  const explicitTitle = compactSpaces(fallback || '');
+  if (explicitTitle && !/^Book\d+$/i.test(explicitTitle)) return explicitTitle;
+  const firstLine = cleanText(text)
+    .split('\n')
+    .map((line) => line.trim())
+    .find(Boolean);
+  return firstLine?.match(/^[-—]+(.+?)[-—]+$/)?.[1]?.trim() || explicitTitle || '';
+}
+
+async function loadReadableSources(textMap) {
+  const localizationRows = await loadJson(path.join(excelDir, 'LocalizationExcelConfigData.json'), []);
+  const documentRows = await loadJson(path.join(excelDir, 'DocumentExcelConfigData.json'), []);
+  const materialRows = await loadJson(path.join(excelDir, 'MaterialExcelConfigData.json'), []);
+  const metaByLocalizationId = new Map();
+
+  const materialNameById = new Map();
+  for (const row of materialRows) {
+    const name = textMap.get(String(row.nameTextMapHash || '')) || '';
+    if (name && row.id !== undefined) materialNameById.set(String(row.id), name);
+  }
+
+  for (const row of documentRows) {
+    const title = textMap.get(String(row.titleTextMapHash || '')) || materialNameById.get(String(row.id)) || '';
+    const ids = [
+      ...(Array.isArray(row.questIDList) ? row.questIDList : []),
+      ...(Array.isArray(row.contentLocalizedId) ? row.contentLocalizedId : []),
+      ...(Array.isArray(row.questContentLocalizedId) ? row.questContentLocalizedId : []),
+    ];
+    for (const id of ids) {
+      if (!id) continue;
+      metaByLocalizationId.set(String(id), {
+        documentId: row.id,
+        title,
+      });
+    }
+  }
+
+  const files = new Set(await readdir(readableDir).catch(() => []));
+  const sources = [];
+  for (const row of localizationRows) {
+    const stem = readableStem(row);
+    if (!stem) continue;
+    const file = `${stem}.txt`;
+    if (!files.has(file)) continue;
+    const text = cleanText(await readTextIfExists(path.join(readableDir, file)));
+    if (!isReadableQuote(text)) continue;
+    const meta = metaByLocalizationId.get(String(row.id)) || {};
+    const title = titleFromReadableText(text, meta.title || stem);
+    sources.push({
+      id: `readable:${row.id}`,
+      file,
+      text,
+      title,
+      localizationId: row.id,
+      documentId: meta.documentId || 0,
+    });
+  }
+  return sources;
 }
 
 function humanCitation(ref) {
@@ -401,6 +498,22 @@ function makeQuoteRecord(hash, index, text, ref) {
   };
 }
 
+function makeReadableQuoteRecord(source, index, text) {
+  const title = source.title || source.file.replace(/\.txt$/i, '');
+  const ref = {
+    category: '书籍/可读物',
+    file: `Readable/CHS/${source.file}`,
+    field: 'readableText',
+    ids: `localizationId=${source.localizationId}${source.documentId ? `, documentId=${source.documentId}` : ''}`,
+    source: `书籍「${title}」`,
+  };
+  const record = makeQuoteRecord(source.id, index, text, ref);
+  record.id = `${source.id}:${index}`;
+  record.k = '书籍/可读物';
+  record.q = Math.max(record.q, 0.84);
+  return record;
+}
+
 async function writeShards(root, prefix, records, size) {
   await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
@@ -441,6 +554,8 @@ async function main() {
   const extra = [];
   let sourced = 0;
   let unsourced = 0;
+  let readableFiles = 0;
+  let readableRecords = 0;
 
   for (const [hash, text] of textMap.entries()) {
     const cleaned = compactSpaces(text);
@@ -458,6 +573,16 @@ async function main() {
       }
     } else {
       extra.push(record);
+    }
+  }
+
+  const readableSources = await loadReadableSources(textMap);
+  readableFiles = readableSources.length;
+  for (const source of readableSources) {
+    for (const [index, chunk] of splitIntoQuoteChunks(source.text).entries()) {
+      if (!isReadableQuote(chunk)) continue;
+      core.push(makeReadableQuoteRecord(source, index, chunk));
+      readableRecords += 1;
     }
   }
 
@@ -497,6 +622,8 @@ async function main() {
       extraRecords: extra.length,
       sourcedRecords: sourced,
       unsourcedRecords: unsourced,
+      readableFiles,
+      readableRecords,
     },
     modes: {
       core: {

@@ -30,7 +30,7 @@ async function main() {
     run('git', ['-C', dataDir, 'pull', '--ff-only']);
   }
 
-  run('git', ['-C', dataDir, 'sparse-checkout', 'set', 'TextMap', 'ExcelBinOutput']);
+  run('git', ['-C', dataDir, 'sparse-checkout', 'set', 'TextMap', 'ExcelBinOutput', 'Readable/CHS']);
 
   console.log('');
   console.log('Genshin data is ready.');

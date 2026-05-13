@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -8,6 +8,8 @@ const workspaceRoot = path.resolve(__dirname, '..', '..');
 const workflowRoot = path.resolve(__dirname, '..');
 const dataDir = process.env.GENSHIN_DATA_DIR || path.join(workspaceRoot, 'genshin-game-data');
 const textMapDir = path.join(dataDir, 'TextMap');
+const excelDir = path.join(dataDir, 'ExcelBinOutput');
+const readableDir = path.join(dataDir, 'Readable', 'CHS');
 const indexDir = path.join(workflowRoot, 'index');
 const sourceIndexPath = path.join(indexDir, 'source-index.json');
 const manifestPath = path.join(indexDir, 'manifest.json');
@@ -42,6 +44,25 @@ async function loadJson(filePath, fallback = null) {
   }
 }
 
+async function readTextIfExists(filePath) {
+  try {
+    const bytes = await readFile(filePath);
+    const utf8 = new TextDecoder('utf-8').decode(bytes);
+    if (!looksMojibake(utf8)) return utf8;
+    return new TextDecoder('gb18030').decode(bytes);
+  } catch {
+    return '';
+  }
+}
+
+function looksMojibake(text) {
+  const sample = text.slice(0, 2000);
+  if (sample.includes('\uFFFD')) return true;
+  const latinNoise = sample.match(/[ÃÂãäåæçèéêìíîïòóôöùúûü]/g)?.length || 0;
+  const hanCount = sample.match(/[\u4e00-\u9fff]/g)?.length || 0;
+  return latinNoise >= 6 && hanCount < latinNoise * 2;
+}
+
 function cleanText(value) {
   if (typeof value !== 'string') return '';
   return value
@@ -58,15 +79,127 @@ function compact(value, max = 220) {
   return text.length > max ? `${text.slice(0, max - 1)}...` : text;
 }
 
-function scoreText(text, terms, sourceCount) {
+function readableStem(localizationRow) {
+  const candidates = [
+    localizationRow?.LJMEGPECFEN,
+    localizationRow?.DALLNFNILMI,
+    localizationRow?.chsPath,
+    localizationRow?.cnPath,
+  ].filter(Boolean);
+  for (const value of candidates) {
+    const match = String(value).match(/Readable\/CHS\/([^/\\]+)$/i);
+    if (match) return match[1];
+  }
+  return '';
+}
+
+function titleFromReadableText(text, fallback) {
+  const explicitTitle = compact(fallback || '', 80);
+  if (explicitTitle && !/^Book\d+$/i.test(explicitTitle)) return explicitTitle;
+  const firstLine = cleanText(text)
+    .split('\n')
+    .map((line) => line.trim())
+    .find(Boolean);
+  return firstLine?.match(/^[-—]+(.+?)[-—]+$/)?.[1]?.trim() || explicitTitle || '';
+}
+
+function splitReadableText(text) {
+  const cleaned = cleanText(text).replace(/^#+/, '').trim();
+  const sentences = cleaned.match(/[^。！？!?；;]+[。！？!?；;]?/g) || [cleaned];
+  const chunks = [];
+  for (const sentence of sentences) {
+    const item = compact(sentence, 260);
+    if ((item.match(/[\u4e00-\u9fff]/g)?.length || 0) >= 4) chunks.push(item);
+  }
+  return chunks;
+}
+
+async function loadReadableEntries(textMap) {
+  const localizationRows = await loadJson(path.join(excelDir, 'LocalizationExcelConfigData.json'), []);
+  const documentRows = await loadJson(path.join(excelDir, 'DocumentExcelConfigData.json'), []);
+  const materialRows = await loadJson(path.join(excelDir, 'MaterialExcelConfigData.json'), []);
+  const metaByLocalizationId = new Map();
+  const materialNameById = new Map();
+
+  for (const row of materialRows) {
+    const name = textMap.get(String(row.nameTextMapHash || '')) || '';
+    if (name && row.id !== undefined) materialNameById.set(String(row.id), name);
+  }
+
+  for (const row of documentRows) {
+    const title = textMap.get(String(row.titleTextMapHash || '')) || materialNameById.get(String(row.id)) || '';
+    const ids = [
+      ...(Array.isArray(row.questIDList) ? row.questIDList : []),
+      ...(Array.isArray(row.contentLocalizedId) ? row.contentLocalizedId : []),
+      ...(Array.isArray(row.questContentLocalizedId) ? row.questContentLocalizedId : []),
+    ];
+    for (const id of ids) {
+      if (!id) continue;
+      metaByLocalizationId.set(String(id), { documentId: row.id, title });
+    }
+  }
+
+  const files = new Set(await readdir(readableDir).catch(() => []));
+  const entries = [];
+  for (const row of localizationRows) {
+    const stem = readableStem(row);
+    if (!stem) continue;
+    const file = `${stem}.txt`;
+    if (!files.has(file)) continue;
+    const text = cleanText(await readTextIfExists(path.join(readableDir, file)));
+    if (!text) continue;
+    const meta = metaByLocalizationId.get(String(row.id)) || {};
+    const title = titleFromReadableText(text, meta.title || stem);
+    const ref = {
+      category: '书籍/可读物',
+      file: `Readable/CHS/${file}`,
+      field: 'readableText',
+      ids: `localizationId=${row.id}${meta.documentId ? `, documentId=${meta.documentId}` : ''}`,
+      source: `书籍「${title}」`,
+    };
+    for (const [index, chunk] of splitReadableText(text).entries()) {
+      entries.push({ hash: `readable:${row.id}:${index}`, text: chunk, refs: [ref] });
+    }
+  }
+  return entries;
+}
+
+function semanticHintTerms(query) {
+  const normalized = cleanText(query).replace(/\s+/g, '');
+  if (/性爱|性欲|性描写|性暗示|性关系|隐晦.*性|情欲|欲望|情色|肉欲|身体|肉体|生理|亲密|生育|繁殖|交配|血脉|混血|半仙|仙兽|麒麟/.test(normalized)) {
+    return ['羞耻', '私欲', '沐浴', '衣物', '相亲', '结合', '互相结合', '生儿育女', '月光', '露珠', '浅睡', '血脉', '仙兽', '凡人'];
+  }
+  return [];
+}
+
+function scoreText(text, terms, sourceCount, requireAll = true) {
   const normalized = text.toLowerCase();
   let score = sourceCount > 0 ? 5 : 0;
+  let hits = 0;
+  const termWeights = new Map([
+    ['羞耻', 2],
+    ['私欲', 2],
+    ['生儿育女', 2],
+    ['互相结合', 1.8],
+    ['相亲', 1.6],
+    ['结合', 1.4],
+    ['沐浴', 1.2],
+    ['衣物', 1.2],
+    ['血脉', 1.5],
+    ['浅睡', 1.3],
+    ['月光', 0.35],
+  ]);
   for (const term of terms) {
     const lower = term.toLowerCase();
     const count = normalized.split(lower).length - 1;
-    if (count <= 0) return -1;
-    score += count * (term.length >= 2 ? 10 : 3);
+    if (count <= 0) {
+      if (requireAll) return -1;
+      continue;
+    }
+    hits += 1;
+    score += count * (term.length >= 2 ? 10 : 3) * (termWeights.get(term) || 1);
   }
+  if (!requireAll && hits === 0) return -1;
   if (text.length >= 12 && text.length <= 180) score += 5;
   if (text.length > 500) score -= 10;
   return score;
@@ -145,14 +278,35 @@ async function main() {
   }
 
   const terms = args.query.split(/\s+/).filter(Boolean);
-  const results = [];
+  const entries = [];
   for (const [hash, text] of textMap.entries()) {
     if (text.length < args.minLength) continue;
     const refs = sourceIndex.refs?.[hash] || [];
     if (args.sourcedOnly && refs.length === 0) continue;
-    const score = scoreText(text, terms, refs.length);
-    if (score < 0) continue;
-    results.push({ hash, text, refs, score });
+    entries.push({ hash, text, refs });
+  }
+  entries.push(...(await loadReadableEntries(textMap)));
+
+  function collectResults(searchTerms, requireAll, bonus = 0) {
+    const collected = [];
+    for (const entry of entries) {
+      if (entry.text.length < args.minLength) continue;
+      const refs = entry.refs || [];
+      if (args.sourcedOnly && refs.length === 0) continue;
+      const searchable = `${entry.text} ${refs.map(humanCitation).join(' ')}`;
+      const score = scoreText(searchable, searchTerms, refs.length, requireAll);
+      if (score < 0) continue;
+      collected.push({ hash: entry.hash, text: entry.text, refs, score: score + bonus });
+    }
+    return collected;
+  }
+
+  let results = collectResults(terms, true);
+  const hintTerms = semanticHintTerms(args.query);
+  let usedSemanticFallback = false;
+  if (results.length === 0 && hintTerms.length) {
+    results = collectResults(hintTerms, false, 3);
+    usedSemanticFallback = true;
   }
 
   results.sort((a, b) => b.score - a.score || a.text.length - b.text.length);
@@ -160,6 +314,7 @@ async function main() {
   const header = [
     `Query: ${args.query}`,
     `Results: ${Math.min(args.limit, results.length)} / ${results.length}`,
+    usedSemanticFallback ? `Semantic fallback: ${hintTerms.join(' ')}` : '',
     manifest.upstream?.commitSubject ? `Data: ${manifest.upstream.commitSubject}` : '',
   ].filter(Boolean);
 

@@ -10,10 +10,10 @@
 
 - 上游：`https://gitlab.com/Dimbreath/AnimeGameData`
 - 本地版本：见 `genshin-workflow/index/manifest.json`
-- 文本：`genshin-game-data/TextMap/TextMap_MediumCHS.json`，并合并 `TextMapCHS.json` 作为补充。
+- 文本：`genshin-game-data/TextMap/TextMap_MediumCHS.json`，并合并 `TextMapCHS.json` 作为补充；书籍/可读物正文来自 `genshin-game-data/Readable/CHS/`。
 - 出处配置：`genshin-game-data/ExcelBinOutput/`
 
-`TextMap` 只负责“这句话是什么”，`ExcelBinOutput` 负责尽量判断“这句话在哪里出现”。引用正文前必须先通过本地索引核出处。
+`TextMap` 只负责“这句话是什么”，`Readable/CHS` 提供书籍正文，`ExcelBinOutput` 负责尽量判断“这句话在哪里出现”。引用正文前必须先通过本地索引核出处。
 
 ## 触发方式
 
@@ -51,7 +51,7 @@ npm run serve:web
 http://localhost:4173
 ```
 
-网页默认使用“核心引文库”，适合手机和写作；勾选“全量文本模式”会加载其余 TextMap 文本，用于查找低频或 UI 类文本。
+网页默认使用“核心引文库”，包含任务对白、角色资料、书籍正文、图鉴和道具说明，适合手机和写作；勾选“全量文本模式”会加载其余 TextMap 文本，用于查找低频或 UI 类文本。
 
 外部 AI 使用入口：
 

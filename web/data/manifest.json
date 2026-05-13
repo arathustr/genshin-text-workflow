@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "builtAt": "2026-05-13T12:04:09.362Z",
+  "builtAt": "2026-05-13T12:22:54.777Z",
   "upstream": {
     "name": "Dimbreath/AnimeGameData",
     "url": "https://gitlab.com/Dimbreath/AnimeGameData.git",
@@ -11,11 +11,13 @@
   },
   "counts": {
     "textEntries": 779392,
-    "publishedRecords": 783802,
-    "coreRecords": 98974,
-    "extraRecords": 684828,
+    "publishedRecords": 794503,
+    "coreRecords": 109728,
+    "extraRecords": 684775,
     "sourcedRecords": 366552,
-    "unsourcedRecords": 410931
+    "unsourcedRecords": 410931,
+    "readableFiles": 1651,
+    "readableRecords": 10701
   },
   "modes": {
     "core": {
@@ -84,7 +86,11 @@
         },
         {
           "path": "data/core/core-015.json",
-          "count": 1474
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-016.json",
+          "count": 5728
         }
       ]
     },
@@ -398,7 +404,7 @@
         },
         {
           "path": "data/extra/extra-076.json",
-          "count": 828
+          "count": 775
         }
       ]
     }

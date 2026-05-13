@@ -19,7 +19,7 @@
 
 ## 它能做什么
 
-- 检索本地 `TextMap_MediumCHS.json` 与 `TextMapCHS.json` 中的《原神》简中文本。
+- 检索本地 `TextMap_MediumCHS.json`、`TextMapCHS.json` 与 `Readable/CHS` 中的《原神》简中文本。
 - 从 `ExcelBinOutput` 建立出处索引，把文本定位到任务、角色、图鉴、书籍、武器、圣遗物等来源。
 - 生成面向读者的出处格式，例如：
   - `——《原神》·赛诺·角色故事`
@@ -27,7 +27,7 @@
   - `——《原神》·素材图鉴「「自由」的教导」`
 - 在最终文章中隐藏内部核验信息，例如 `TextMap hash`、`Dialog ID`、配置表路径。
 - 强制把《原神》文本作为论证主轴，而不是装饰性题词。
-- 构建 GitHub Pages 可直接托管的静态检索站：手机可用，支持模糊社会议题、主题语义扩展、精选引文优先和全量文本模式。
+- 构建 GitHub Pages 可直接托管的静态检索站：手机可用，支持模糊社会议题、主题语义扩展、书籍正文检索、精选引文优先和全量文本模式。
 - 提供 `llms.txt` 与 AI 使用说明页，方便豆包、ChatGPT、Kimi、Claude 等外部 AI 学会如何检索和引用。
 
 ## 为什么做这个
@@ -158,7 +158,7 @@ genshin-workflow/index/
 网页不需要服务器 API。它的检索分三层：
 
 - 精选引文：常用于社会评论的高价值文本优先出现。
-- 核心引文库：任务对白、角色故事、角色语音、书籍、图鉴和道具说明，长文本会切成可直接引用的短句/短段。
+- 核心引文库：任务对白、角色故事、角色语音、书籍正文、图鉴和道具说明，长文本会切成可直接引用的短句/短段。
 - 全量文本模式：加载其余 TextMap 文本，包括 UI、活动规则、名称和低频文本。
 
 你可以直接输入模糊议题：
@@ -204,7 +204,7 @@ ExcelBinOutput 文件名
 
 ## 数据来源
 
-游戏数据由本地脚本从 [Dimbreath/AnimeGameData](https://gitlab.com/Dimbreath/AnimeGameData) 拉取。仓库内的 `web/data/` 是为了静态网页查询生成的发布数据；原始上游数据不内置。
+游戏数据由本地脚本从 [Dimbreath/AnimeGameData](https://gitlab.com/Dimbreath/AnimeGameData) 拉取。脚本会使用 `TextMap`、`ExcelBinOutput` 和 `Readable/CHS`，因此书籍/可读物正文也会进入静态检索数据。仓库内的 `web/data/` 是为了静态网页查询生成的发布数据；原始上游数据不内置。
 
 如果你在自己的项目里使用该数据源，请记得给 Dimbreath 的数据维护工作署名。
 
