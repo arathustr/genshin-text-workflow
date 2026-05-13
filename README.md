@@ -42,6 +42,7 @@
 
 - Node.js 18+
 - Git
+- PowerShell（仅在需要重新压缩网页图片时使用）
 
 克隆仓库：
 
@@ -66,6 +67,12 @@ npm run index
 
 ```bash
 npm run build:web
+```
+
+如需重新下载并压缩网页视觉素材：
+
+```bash
+npm run build:assets
 ```
 
 本地启动网页：
@@ -119,6 +126,7 @@ npm run search -- "自由 生存" --limit 8 --sourced-only
 │   │   ├── setup-data.mjs
 │   │   ├── build-index.mjs
 │   │   ├── search-text.mjs
+│   │   ├── build-web-assets.ps1
 │   │   ├── build-web-data.mjs
 │   │   └── serve-web.mjs
 │   └── references/

@@ -61,9 +61,25 @@ const STRONG_TERMS = new Set([
   '信任',
   '审判',
   '公正',
+  '甘雨',
+  '麒麟',
+  '仙兽',
+  '血脉',
+  '混血',
+  '身体',
+  '生理',
+  '心理',
+  '欲望',
+  '亲密',
+  '来历',
 ]);
 
 const CONCEPT_HINTS = [
+  {
+    pattern: /性爱|性欲|情欲|欲望|情色|肉欲|身体|肉体|生理|亲密|生育|繁殖|交配|来历|出身|出生|降生|父母|父亲|母亲|血脉|混血|半仙|仙兽|麒麟|角/,
+    topics: { body_desire_origin: 10, silence_relationship: 4, dignity_identity: 4, trust_personhood: 2 },
+    terms: ['甘雨', '麒麟', '仙兽', '血脉', '混血', '身体', '生理', '心理', '欲望', '亲密', '来历', '父母', '角'],
+  },
   {
     pattern: /霸凌|欺凌|羞辱|欺负|孤立|网暴|骚扰|伤害|暴力|羞耻/,
     topics: { harm_protection: 8, justice_trial: 5, dignity_identity: 4, trust_personhood: 3 },
@@ -81,8 +97,8 @@ const CONCEPT_HINTS = [
   },
   {
     pattern: /性别|女性|女权|厌女|婚恋|彩礼|家务|生育|恋爱|出轨|分手|亲密关系/,
-    topics: { silence_relationship: 7, trust_personhood: 5, dignity_identity: 5, power_responsibility: 4 },
-    terms: ['信任', '背叛', '关系', '尊严', '责任', '伤害', '等待'],
+    topics: { silence_relationship: 7, trust_personhood: 5, dignity_identity: 5, power_responsibility: 4, body_desire_origin: 3 },
+    terms: ['信任', '背叛', '关系', '尊严', '责任', '伤害', '等待', '身体', '血脉'],
   },
   {
     pattern: /焦虑|抑郁|压力|崩溃|痛苦|绝望|孤独|自责|创伤/,
@@ -201,6 +217,10 @@ function topicScores(query, terms, hints = conceptHints(query)) {
     add('silence_relationship', 8);
     add('trust_personhood', 4);
   }
+  if (/性爱|性欲|情欲|欲望|身体|肉体|生理|亲密|生育|父母|血脉|混血|麒麟|仙兽|甘雨|角/.test(normalized)) {
+    add('body_desire_origin', 9);
+    add('dignity_identity', 3);
+  }
   if (scores.size === 0) {
     const queryGrams = bigrams(query);
     const fuzzy = state.topics
@@ -288,8 +308,9 @@ function scoreRecord(record, queryTerms, expansionTerms, scores, exactMode) {
   const sourceBoost = /任务|角色|书籍|素材图鉴|道具|圣遗物|武器/.test(record.c) ? 2.2 : 0;
   const length = record.t.length;
   const lengthBoost = length >= 10 && length <= 220 ? 1.2 : length > 600 ? -1.5 : 0;
-  const ideaBoost = STRONG_TERMS.size
-    ? [...STRONG_TERMS].reduce((sum, term) => sum + (record.t.includes(term) ? 0.8 : 0), 0)
+  const activeStrongTerms = new Set([...queryTerms, ...expansionTerms].filter((term) => STRONG_TERMS.has(term)));
+  const ideaBoost = activeStrongTerms.size
+    ? [...activeStrongTerms].reduce((sum, term) => sum + (record.t.includes(term) ? 0.8 : 0), 0)
     : 0;
   const featuredBoost = record.hot ? 18 : 0;
   const finalScore =

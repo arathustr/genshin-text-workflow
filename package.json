@@ -12,6 +12,7 @@
     "setup:data": "node genshin-workflow/tools/setup-data.mjs",
     "index": "node genshin-workflow/tools/build-index.mjs",
     "search": "node genshin-workflow/tools/search-text.mjs",
+    "build:assets": "powershell -NoProfile -ExecutionPolicy Bypass -File genshin-workflow/tools/build-web-assets.ps1",
     "build:web": "node genshin-workflow/tools/build-web-data.mjs",
     "serve:web": "node genshin-workflow/tools/serve-web.mjs"
   },

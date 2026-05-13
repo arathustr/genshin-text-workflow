@@ -12,7 +12,11 @@
   </head>
   <body>
     <header class="hero">
-      <img class="hero__art" src="./assets/teyvat-search.svg" alt="提瓦特风格的星空、书页与元素光点" width="900" height="520" />
+      <div class="hero__gallery" aria-hidden="true">
+        <img class="hero__thumb hero__thumb--wide" src="./assets/liyue-harbor.jpg" alt="" width="520" height="180" />
+        <img class="hero__thumb" src="./assets/anniversary.jpg" alt="" width="260" height="170" />
+      </div>
+      <img class="hero__art" src="./assets/ganyu-art.jpg" alt="甘雨官方角色图" width="520" height="470" />
       <div class="hero__inner">
         <p class="eyebrow">Genshin Text Citation Search</p>
         <h1>原神引文检索</h1>
@@ -58,6 +62,7 @@
           <button data-query="校园霸凌和网暴">霸凌网暴</button>
           <button data-query="形式主义一刀切管理">一刀切管理</button>
           <button data-query="职场内卷绩效压榨">内卷绩效</button>
+          <button data-query="性爱 身体欲望 甘雨 血脉">身体欲望</button>
         </div>
 
         <div class="status" id="status" role="status">正在读取索引说明…</div>
