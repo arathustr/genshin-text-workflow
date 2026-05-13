@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "builtAt": "2026-05-13T11:23:11.455Z",
+  "upstream": {
+    "name": "Dimbreath/AnimeGameData",
+    "url": "https://gitlab.com/Dimbreath/AnimeGameData.git",
+    "branch": "master",
+    "commit": "f9a21406731cd33242defd88dfc2aa06674ab353",
+    "commitDate": "2026-04-14 15:43:53 -0300",
+    "commitSubject": "CNRELWin6.5.0_R43669882_S43875585_D43721974"
+  },
+  "counts": {
+    "textEntries": 779392,
+    "publishedRecords": 783802,
+    "coreRecords": 98824,
+    "extraRecords": 684978,
+    "sourcedRecords": 366552,
+    "unsourcedRecords": 410931
+  },
+  "modes": {
+    "core": {
+      "label": "核心引文库",
+      "description": "默认加载，面向写作和手机检索，优先包含任务对白、角色故事、角色语音、书籍、图鉴和道具说明。",
+      "shards": [
+        {
+          "path": "data/core/core-000.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-001.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-002.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-003.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-004.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-005.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-006.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-007.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-008.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-009.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-010.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-011.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-012.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-013.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-014.json",
+          "count": 6500
+        },
+        {
+          "path": "data/core/core-015.json",
+          "count": 1324
+        }
+      ]
+    },
+    "full": {
+      "label": "全量文本",
+      "description": "在核心引文库基础上加载其余 TextMap 文本，包含 UI、活动规则、名称和未定位文本，适合精确查漏。",
+      "shards": [
+        {
+          "path": "data/extra/extra-000.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-001.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-002.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-003.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-004.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-005.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-006.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-007.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-008.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-009.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-010.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-011.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-012.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-013.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-014.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-015.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-016.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-017.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-018.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-019.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-020.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-021.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-022.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-023.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-024.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-025.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-026.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-027.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-028.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-029.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-030.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-031.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-032.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-033.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-034.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-035.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-036.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-037.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-038.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-039.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-040.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-041.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-042.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-043.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-044.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-045.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-046.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-047.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-048.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-049.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-050.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-051.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-052.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-053.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-054.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-055.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-056.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-057.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-058.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-059.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-060.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-061.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-062.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-063.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-064.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-065.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-066.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-067.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-068.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-069.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-070.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-071.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-072.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-073.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-074.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-075.json",
+          "count": 9000
+        },
+        {
+          "path": "data/extra/extra-076.json",
+          "count": 978
+        }
+      ]
+    }
+  }
+}

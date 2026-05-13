@@ -29,6 +29,37 @@
 <材料>
 ```
 
+## 静态检索网页
+
+这个项目还包含一个无需后端的静态网页，位于 `web/`。它面向普通用户和外部 AI，用来把模糊社会议题检索成可引用的《原神》原文与出处。
+
+生成网页数据：
+
+```powershell
+npm run build:web
+```
+
+启动本地网页：
+
+```powershell
+npm run serve:web
+```
+
+默认地址：
+
+```text
+http://localhost:4173
+```
+
+网页默认使用“核心引文库”，适合手机和写作；勾选“全量文本模式”会加载其余 TextMap 文本，用于查找低频或 UI 类文本。
+
+外部 AI 使用入口：
+
+- `web/llms.txt`
+- `web/ai-use.html`
+
+AI 使用时应先把事件拆成概念词，例如“摄像头查出勤”可拆成“监控 / 数据 / 风纪 / 教令 / 权力 / 责任 / 自由 / 秩序”。引用时只使用网页结果里的原文和出处。
+
 ## 输出
 
 输出是一篇短评论。原神原文是论证主轴，不是装饰性题词。评论必须沿着引文推进，让游戏文本提出问题、限定方向、展开现实处境。
@@ -74,6 +105,13 @@ node genshin-workflow/tools/build-index.mjs
 ```powershell
 node genshin-workflow/tools/search-text.mjs "契约" --limit 12
 node genshin-workflow/tools/search-text.mjs "自由 代价" --limit 12
+```
+
+生成并启动静态网页：
+
+```powershell
+npm run build:web
+npm run serve:web
 ```
 
 ## 引用纪律

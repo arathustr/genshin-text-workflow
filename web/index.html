@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="《原神》原文与出处检索站。输入社会议题、概念或模糊想法，查找可引用的原句和普通读者能看懂的出处。"
+    />
+    <title>原神引文检索</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__inner">
+        <p class="eyebrow">Genshin Text Citation Search</p>
+        <h1>原神引文检索</h1>
+        <p class="lead">
+          输入社会事件、概念或模糊想法，找到《原神》原文、说话人和可读出处。默认适合手机和写作场景，外部 AI 也可以照着本页示例使用。
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <section class="search-panel" aria-label="搜索">
+        <div class="search-box">
+          <label for="query">搜索词、社会议题或写作意图</label>
+          <textarea
+            id="query"
+            rows="3"
+            placeholder="例如：高校用摄像头识别学生查出勤 / 手机袋强制收缴 / 权力不承担责任 / 冷暴力不回消息"
+          ></textarea>
+          <div class="search-actions">
+            <button id="searchButton" type="button">检索引文</button>
+            <button id="clearButton" class="secondary" type="button">清空</button>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="检索模式">
+          <label class="toggle">
+            <input id="fullMode" type="checkbox" />
+            <span>全量文本模式</span>
+          </label>
+          <label class="toggle">
+            <input id="exactMode" type="checkbox" />
+            <span>偏精确匹配</span>
+          </label>
+        </div>
+
+        <div class="examples" aria-label="示例">
+          <button data-query="高校用摄像头识别学生查出勤">摄像头查出勤</button>
+          <button data-query="上课强制把手机放进手机袋">手机袋收缴</button>
+          <button data-query="权力不承担责任">权力与责任</button>
+          <button data-query="冷暴力不接电话不回消息">冷暴力</button>
+          <button data-query="学生被当成数据和编号管理">学生被数据化</button>
+          <button data-query="教师权力失范伤害学生">教师权力失范</button>
+        </div>
+
+        <div class="status" id="status" role="status">正在读取索引说明…</div>
+      </section>
+
+      <section class="ai-panel" aria-label="给 AI 的使用说明">
+        <div>
+          <h2>给外部 AI 的使用方式</h2>
+          <p>
+            如果你是豆包、ChatGPT、Kimi、Claude 或其他 AI：请把用户的模糊议题拆成 3-6 个概念词，在本站搜索，引用结果时只使用每条结果里的“原文”和“出处”。
+          </p>
+        </div>
+        <a class="text-link" href="./ai-use.html">查看 AI 使用页</a>
+      </section>
+
+      <section class="results-head" aria-live="polite">
+        <div>
+          <h2>检索结果</h2>
+          <p id="summary">输入一个议题开始检索。</p>
+        </div>
+        <div class="pill-row" id="activeTopics"></div>
+      </section>
+
+      <section class="results" id="results" aria-label="检索结果列表"></section>
+    </main>
+
+    <template id="resultTemplate">
+      <article class="result-card">
+        <div class="result-card__meta">
+          <span class="category"></span>
+          <span class="score"></span>
+        </div>
+        <blockquote class="quote"></blockquote>
+        <p class="citation"></p>
+        <div class="topic-list"></div>
+        <div class="card-actions">
+          <button class="copy-quote" type="button">复制原文</button>
+          <button class="copy-citation" type="button">复制出处</button>
+        </div>
+      </article>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

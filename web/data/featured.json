@@ -1,0 +1,145 @@
+[
+  {
+    "id": "featured-cyno-order",
+    "t": "赛诺始终认为，风纪官们并不是求知者的敌人。教导赛诺的学者居勒什曾告诉他，如果「智慧」失去了教令的约束，那它就会转为「灾祸」。",
+    "c": "《原神》·赛诺·角色故事",
+    "k": "精选引文",
+    "sp": "赛诺",
+    "src": "角色故事",
+    "q": 1,
+    "hot": true,
+    "v": [["education_discipline", 9], ["freedom_order", 5], ["power_responsibility", 3]]
+  },
+  {
+    "id": "featured-jean-order",
+    "t": "虽说蒙德是自由之都，但无边际的散漫只会带来混沌与彷徨。",
+    "c": "《原神》·琴·角色故事",
+    "k": "精选引文",
+    "sp": "琴",
+    "src": "角色故事",
+    "q": 1,
+    "hot": true,
+    "v": [["freedom_order", 9], ["education_discipline", 3]]
+  },
+  {
+    "id": "featured-xinyan-freedom",
+    "t": "有一种东西，越受到压迫就越是反弹，越被束缚就越冲向自由。我喜欢它，一直追求那样可贵的韧劲。",
+    "c": "《原神》·任务「艰厄得解谜境中」·辛焱",
+    "k": "精选引文",
+    "sp": "辛焱",
+    "src": "艰厄得解谜境中",
+    "q": 1,
+    "hot": true,
+    "v": [["freedom_order", 9], ["resistance_hope", 6], ["bureaucracy_control", 2]]
+  },
+  {
+    "id": "featured-zhongli-power",
+    "t": "「神之眼」…也是一种「契约」。须知一切力量皆有其代价，一千种权力伴随着一千种责任。",
+    "c": "《原神》·钟离·角色语音",
+    "k": "精选引文",
+    "sp": "钟离",
+    "src": "角色语音",
+    "q": 1,
+    "hot": true,
+    "v": [["power_responsibility", 9], ["justice_trial", 3], ["bureaucracy_control", 2]]
+  },
+  {
+    "id": "featured-paimon-personhood",
+    "t": "至少这些温和的蕈兽是你的伙伴，而不是棋子或敌人！我们希望你信任「火一」，信任你的其他蕈兽。",
+    "c": "《原神》·任务「最强的对手！至大的危机！」·派蒙",
+    "k": "精选引文",
+    "sp": "派蒙",
+    "src": "最强的对手！至大的危机！",
+    "q": 1,
+    "hot": true,
+    "v": [["trust_personhood", 9], ["dignity_identity", 5], ["education_discipline", 2]]
+  },
+  {
+    "id": "featured-tighnari-knowledge",
+    "t": "知识本应是属于所有生灵的宝藏，应当被对它们产生好奇的人热情拥抱，而不是沦为被限制分配的纯粹生存工具。",
+    "c": "《原神》·提纳里·角色故事",
+    "k": "精选引文",
+    "sp": "提纳里",
+    "src": "角色故事",
+    "q": 1,
+    "hot": true,
+    "v": [["education_discipline", 8], ["surveillance_technology", 8], ["freedom_order", 4]]
+  },
+  {
+    "id": "featured-akasha-distribution",
+    "t": "教令院通过虚空终端将知识合理分配给需要的人，而额外的知识传播容易引发其他的问题。",
+    "c": "《原神》·妮维妲·对话",
+    "k": "精选引文",
+    "sp": "妮维妲",
+    "src": "对话",
+    "q": 0.96,
+    "hot": true,
+    "v": [["surveillance_technology", 9], ["education_discipline", 7], ["bureaucracy_control", 4]]
+  },
+  {
+    "id": "featured-freedom-teaching",
+    "t": "风之国土的精神是自由。自由其一，是生存的自由，即是能健全、健康地生活，而不必担心朝不保夕的自由。",
+    "c": "《原神》·素材图鉴「「自由」的教导」",
+    "k": "精选引文",
+    "sp": "",
+    "src": "「自由」的教导",
+    "q": 0.96,
+    "hot": true,
+    "v": [["freedom_order", 9], ["dignity_identity", 4], ["harm_protection", 3]]
+  },
+  {
+    "id": "featured-ayato-trust",
+    "t": "信任他人不是一件容易的事，特别是对于位居高位的人来说。一旦错付了，付出生命的代价也不算少见。",
+    "c": "《原神》·神里绫人·角色语音",
+    "k": "精选引文",
+    "sp": "神里绫人",
+    "src": "角色语音",
+    "q": 0.96,
+    "hot": true,
+    "v": [["trust_personhood", 8], ["power_responsibility", 4], ["silence_relationship", 4]]
+  },
+  {
+    "id": "featured-lyney-trust-collapse",
+    "t": "一旦信任崩塌，评判的天平也会不再端正，善良的目标也会被曲解为恶行。",
+    "c": "《原神》·林尼·角色故事",
+    "k": "精选引文",
+    "sp": "林尼",
+    "src": "角色故事",
+    "q": 0.96,
+    "hot": true,
+    "v": [["trust_personhood", 8], ["silence_relationship", 6], ["justice_trial", 4]]
+  },
+  {
+    "id": "featured-chevreuse-justice",
+    "t": "这里不是私刑场，而是正义的发声地。",
+    "c": "《原神》·夏沃蕾·角色故事",
+    "k": "精选引文",
+    "sp": "夏沃蕾",
+    "src": "角色故事",
+    "q": 0.94,
+    "hot": true,
+    "v": [["justice_trial", 9], ["harm_protection", 4], ["power_responsibility", 3]]
+  },
+  {
+    "id": "featured-fetters",
+    "t": "人们总是会对英雄的故事过分夸大啦。甚至是曾经束缚英雄的枷锁，都被升华到了自由之敌的高度。",
+    "c": "《原神》·素材图鉴「狮牙斗士的枷锁」",
+    "k": "精选引文",
+    "sp": "",
+    "src": "狮牙斗士的枷锁",
+    "q": 0.94,
+    "hot": true,
+    "v": [["freedom_order", 9], ["memory_truth", 5], ["justice_trial", 2]]
+  },
+  {
+    "id": "featured-stars-knowledge",
+    "t": "知识就像夜空中闪耀的星辰，不会被任何事物撼动。",
+    "c": "《原神》·提纳里·角色故事",
+    "k": "精选引文",
+    "sp": "提纳里",
+    "src": "角色故事",
+    "q": 0.92,
+    "hot": true,
+    "v": [["education_discipline", 7], ["resistance_hope", 4], ["dignity_identity", 3]]
+  }
+]

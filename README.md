@@ -13,7 +13,7 @@
   <img alt="状态" src="https://img.shields.io/badge/status-experimental-f59e0b?style=for-the-badge" />
 </p>
 
-> 用《原神》的中文游戏文本，写有出处、有论证、有现实指向的社会评论。
+> 用《原神》的中文游戏文本，写有出处、有论证、有现实指向的社会评论；也提供一个无需后端的静态引文检索网页。
 
 这是一个本地写作工作流，不是 Codex skill。它会检索《原神》简中文本，尽量把引文回溯到普通读者能看懂的游戏内出处，并帮助写出由游戏文本推进论证的短评，而不是在现实评论里点缀几句台词。
 
@@ -27,6 +27,8 @@
   - `——《原神》·素材图鉴「「自由」的教导」`
 - 在最终文章中隐藏内部核验信息，例如 `TextMap hash`、`Dialog ID`、配置表路径。
 - 强制把《原神》文本作为论证主轴，而不是装饰性题词。
+- 构建 GitHub Pages 可直接托管的静态检索站：手机可用，支持模糊社会议题、主题语义扩展、精选引文优先和全量文本模式。
+- 提供 `llms.txt` 与 AI 使用说明页，方便豆包、ChatGPT、Kimi、Claude 等外部 AI 学会如何检索和引用。
 
 ## 为什么做这个
 
@@ -58,6 +60,24 @@ npm run setup:data
 
 ```bash
 npm run index
+```
+
+生成静态网页数据：
+
+```bash
+npm run build:web
+```
+
+本地启动网页：
+
+```bash
+npm run serve:web
+```
+
+打开：
+
+```text
+http://localhost:4173
 ```
 
 检索文本：
@@ -98,23 +118,59 @@ npm run search -- "自由 生存" --limit 8 --sourced-only
 │   ├── tools/
 │   │   ├── setup-data.mjs
 │   │   ├── build-index.mjs
-│   │   └── search-text.mjs
+│   │   ├── search-text.mjs
+│   │   ├── build-web-data.mjs
+│   │   └── serve-web.mjs
 │   └── references/
 │       ├── themes.md
 │       ├── citation-style.md
 │       └── anti-patterns.md
+├── web/
+│   ├── index.html
+│   ├── ai-use.html
+│   ├── llms.txt
+│   └── data/
+│       ├── core/
+│       └── extra/
 ├── genshin-outputs/
 └── package.json
 ```
 
-外部数据和生成文件不会进入仓库：
+本地上游数据和本地出处索引不会进入仓库：
 
 ```text
 genshin-game-data/
 genshin-workflow/index/
 ```
 
-这样仓库保持轻量。游戏数据和出处索引都可以在本地重新生成。
+`web/data/` 会进入仓库，用于静态网页直接检索。它不是原始 2GB 数据，而是压缩过语义结构的发布数据：默认核心引文库用于手机和写作，全量模式用于查漏。
+
+## 静态网页检索
+
+网页不需要服务器 API。它的检索分三层：
+
+- 精选引文：常用于社会评论的高价值文本优先出现。
+- 核心引文库：任务对白、角色故事、角色语音、书籍、图鉴和道具说明，长文本会切成可直接引用的短句/短段。
+- 全量文本模式：加载其余 TextMap 文本，包括 UI、活动规则、名称和低频文本。
+
+你可以直接输入模糊议题：
+
+```text
+高校用摄像头识别学生查出勤
+上课强制把手机放进手机袋
+权力不承担责任
+冷暴力不接电话不回消息
+学生被当成数据和编号管理
+```
+
+外部 AI 可以读取：
+
+```text
+/llms.txt
+/ai-use.html
+```
+
+这些页面会提醒 AI：先把议题拆成概念词，再搜索；引用时只使用结果里的原文和出处，不要编造台词。
 
 ## 引用纪律
 
@@ -140,7 +196,7 @@ ExcelBinOutput 文件名
 
 ## 数据来源
 
-游戏数据由本地脚本从 [Dimbreath/AnimeGameData](https://gitlab.com/Dimbreath/AnimeGameData) 拉取。本仓库不内置完整数据包。
+游戏数据由本地脚本从 [Dimbreath/AnimeGameData](https://gitlab.com/Dimbreath/AnimeGameData) 拉取。仓库内的 `web/data/` 是为了静态网页查询生成的发布数据；原始上游数据不内置。
 
 如果你在自己的项目里使用该数据源，请记得给 Dimbreath 的数据维护工作署名。
 

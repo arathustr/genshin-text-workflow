@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arathustr.github.io/genshin-text-workflow/sitemap.xml

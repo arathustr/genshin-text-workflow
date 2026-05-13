@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="给外部 AI 使用《原神》引文检索站的说明。"
+    />
+    <title>AI 使用说明 - 原神引文检索</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__inner">
+        <p class="eyebrow">For LLMs and writers</p>
+        <h1>AI 使用说明</h1>
+        <p class="lead">
+          本页告诉外部 AI 如何把模糊议题转成可检索概念，并从本站结果中引用《原神》原文和可读出处。
+        </p>
+      </div>
+    </header>
+    <main>
+      <section class="search-panel">
+        <h2>使用原则</h2>
+        <p>请不要编造《原神》台词。每次引用只使用搜索结果中明确给出的原文和出处。</p>
+        <p>如果用户给的是社会事件，请先拆成概念词，再搜索 2-4 次，最后挑选最贴近论证的文本。</p>
+        <p>出处格式应保持为：<strong>《原神》·任务「任务名」·说话人</strong>、<strong>《原神》·角色名·角色故事</strong>、<strong>《原神》·素材图鉴「名称」</strong>等。</p>
+      </section>
+
+      <section class="results">
+        <article class="result-card">
+          <h2>示例：高校摄像头查出勤</h2>
+          <p>推荐搜索词：技术监控、风纪、教令、求知者、权力责任、自由秩序、编号管理。</p>
+          <p>写作角度：用技术把教育问题改造成管理问题；学校拥有治理权力，也要承担解释、比例、隐私和救济责任。</p>
+        </article>
+        <article class="result-card">
+          <h2>示例：强制手机入袋</h2>
+          <p>推荐搜索词：课堂规训、自由束缚、信任、棋子敌人、秩序散漫、权力责任。</p>
+          <p>写作角度：手机袋不是中性工具，强制版本会把学生预设为不可信对象，把自律外包给物理收缴。</p>
+        </article>
+        <article class="result-card">
+          <h2>示例：亲密关系冷暴力</h2>
+          <p>推荐搜索词：沉默、等待、信任、背叛、回应、孤独、关系。</p>
+          <p>写作角度：沉默可以是边界，也可能是惩罚；关键看它是否拒绝沟通并把对方拖入不确定性。</p>
+        </article>
+        <article class="result-card">
+          <h2>示例：教师权力失范</h2>
+          <p>推荐搜索词：权力、责任、伤害、保护、审判、公正、契约、导师。</p>
+          <p>写作角度：权力关系中的同意需要被审慎看待；制度不能只保护头衔，必须保护弱势一方。</p>
+        </article>
+      </section>
+
+      <section class="ai-panel">
+        <div>
+          <h2>可复制给 AI 的提示词</h2>
+          <p>
+            你可以使用“原神引文检索”网站。请把我的议题拆成 3-6 个概念词检索，挑选《原神》原文和可读出处来组织文章。不得编造台词；引用时保留搜索结果里的出处。
+          </p>
+        </div>
+        <a class="text-link" href="./">返回检索</a>
+      </section>
+    </main>
+  </body>
+</html>
