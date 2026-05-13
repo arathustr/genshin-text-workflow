@@ -1,0 +1,24 @@
+{
+  "name": "genshin-text-workflow",
+  "version": "0.1.0",
+  "description": "A local workflow for writing cited social commentary with Genshin Impact text.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "setup:data": "node genshin-workflow/tools/setup-data.mjs",
+    "index": "node genshin-workflow/tools/build-index.mjs",
+    "search": "node genshin-workflow/tools/search-text.mjs"
+  },
+  "keywords": [
+    "genshin-impact",
+    "textmap",
+    "writing-workflow",
+    "social-commentary",
+    "citation",
+    "corpus"
+  ]
+}

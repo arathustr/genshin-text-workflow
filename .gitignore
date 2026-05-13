@@ -1,0 +1,23 @@
+# Local upstream game data
+genshin-game-data/
+
+# Generated index and outputs
+genshin-workflow/index/
+genshin-outputs/*
+!genshin-outputs/.gitkeep
+
+# Dependencies and package managers
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
